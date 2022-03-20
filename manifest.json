@@ -1,0 +1,35 @@
+{
+	"name": "Reaction View Support",
+	"version": "1.0",
+	"description": "Rection View Support",
+	"permissions": [
+		"storage",
+		"tabs",
+		"*://*.youtube.com/*",
+		"*://*.amazon.co.jp/*",
+		"*://*.netflix.com/*",
+		"*://*.funimation.com/*"
+	],
+	"background": {
+		"page": "background.html",
+		"persistent": true
+	},
+	"browser_action": {
+		"default_popup": "popup.html"
+	},
+	"content_scripts": [
+		{
+			"matches": ["*://*.youtube.com/*"],
+			"js": ["youtube.js"]
+		},
+		{
+			"matches": ["*://*.funimation.com/*"],
+			"js": ["funimation.js"]
+		}
+	],
+	"options_ui": {
+		"page": "options.html",
+		"open_in_tab": false
+	},
+	"manifest_version": 2
+}
