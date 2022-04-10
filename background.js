@@ -115,6 +115,22 @@ chrome.runtime.onInstalled.addListener(function() {
 				// seekSlave(masterPosition);
 				return;
 			}
+			if(msg.command == 'getVttLocation') {
+				const callback = detail => {
+					chrome.webRequest.onCompleted.removeListener(callback);
+					if(detail.tabId = sender.tab.id) {
+						chrome.tabs.executeScript(
+							sender.tab.id,
+							{code: `syncCtl.setupVtt('${detail.url}');`}
+						)
+					}
+				}
+				const filter = {
+					urls: ['https://*/*.vtt']
+				}
+				chrome.webRequest.onCompleted.addListener(callback, filter);
+				return;
+			}
 		}
 		if(msg.type == 'FROM_ACTION') {
 			if(msg.command == 'sync') {

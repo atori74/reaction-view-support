@@ -24,7 +24,7 @@
 		},
 		{
 			"matches": ["*://*.funimation.com/*"],
-			"js": ["funimation.js"]
+			"js": ["packages/vtt.min.js", "funimation.js"]
 		}
 	],
 	"options_ui": {
