@@ -118,7 +118,7 @@ chrome.runtime.onInstalled.addListener(function() {
 			if(msg.command == 'getVttLocation') {
 				const callback = detail => {
 					chrome.webRequest.onCompleted.removeListener(callback);
-					if(detail.tabId = sender.tab.id) {
+					if(detail.tabId == sender.tab.id) {
 						chrome.tabs.executeScript(
 							sender.tab.id,
 							{code: `syncCtl.setupVtt('${detail.url}');`}
