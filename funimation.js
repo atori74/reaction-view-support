@@ -93,6 +93,35 @@ var FunimationSync = class {
 		this.traceTrack();
 	}
 
+	async traceTrack() {
+		setInterval(_ => {
+			for(const row of document.querySelectorAll('.track-row.current-track-row')) {
+				row.classList.remove('current-track-row');
+			}
+
+			const currentCue = this.getCurrentCue();
+			if (!currentCue) return;
+			const row = document.getElementById('track-row-' + currentCue.value.id);
+			if (row) row.classList.add('current-track-row');
+
+			const trackBox = document.getElementById('rvs-tracks-box');
+			const doScroll = true;
+			if (doScroll) {
+				const relativeTop = row.getBoundingClientRect().top - trackBox.firstChild.getBoundingClientRect().top;
+				const topMargin = 16;
+				const scrollTopTo= relativeTop + topMargin - (trackBox.clientHeight/3);
+				if (Math.abs(scrollTopTo - trackBox.scrollTop) > trackBox.clientHeight) {
+					trackBox.scrollTop = scrollTopTo;
+				} else {
+					trackBox.scroll({
+						top: scrollTopTo,
+						behavior: 'smooth',
+					})
+				}
+			}
+		}, 100);
+	}
+
 	toggleTracksBox() {
 		document.getElementById('rvs-tracks-box').classList.toggle('visible');
 	}
