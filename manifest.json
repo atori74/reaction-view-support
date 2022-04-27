@@ -5,10 +5,13 @@
 	"permissions": [
 		"storage",
 		"tabs",
+		"webRequest",
+		"webRequestBlocking",
 		"*://*.youtube.com/*",
 		"*://*.amazon.co.jp/*",
 		"*://*.netflix.com/*",
-		"*://*.funimation.com/*"
+		"*://*.funimation.com/*",
+		"https://*.prd.funimationsvc.com/*"
 	],
 	"background": {
 		"page": "background.html",
@@ -24,7 +27,8 @@
 		},
 		{
 			"matches": ["*://*.funimation.com/*"],
-			"js": ["packages/vtt.min.js", "funimation.js"]
+			"js": ["packages/vtt.min.js", "funimation.js"],
+			"css": ["funimation.css"]
 		}
 	],
 	"options_ui": {

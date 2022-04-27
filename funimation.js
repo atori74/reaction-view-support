@@ -1,3 +1,44 @@
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id)) {
+    // if present, the header is where you move the DIV from:
+    document.getElementById(elmnt.id).onmousedown = dragMouseDown;
+  } else {
+    // otherwise, move the DIV from anywhere inside the DIV:
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
 class LinkNode {
 	constructor(value) {
 		this.value = value
@@ -34,6 +75,26 @@ var FunimationSync = class {
 			if(e.key == 'l') this.seekToNextTrack();
 		}
 		document.addEventListener('keypress', this.moveTrackListener);
+	}
+
+	setupTracksBox() {
+		const boxDiv = document.createElement('div');
+		boxDiv.id = 'rvs-tracks-box';
+		boxDiv.classList.add('visible');
+		for(let cur = this.trackList.head; cur; cur = cur.next) {
+			const row = document.createElement('div');
+			row.innerText = cur.value.text;
+			row.id = 'track-row-' + cur.value.id;
+			row.classList.add('track-row')
+			boxDiv.appendChild(row);
+		}
+		dragElement(boxDiv);
+		document.body.appendChild(boxDiv);
+		this.traceTrack();
+	}
+
+	toggleTracksBox() {
+		document.getElementById('rvs-tracks-box').classList.toggle('visible');
 	}
 
 	getDuration() {
@@ -95,6 +156,9 @@ var FunimationSync = class {
 	async setupVtt(url) {
 		if(this.trackList) return;
 
+		this.vttUrl = url;
+		console.log(url);
+
 		const res = await fetch(url);
 		if(!res.ok) return;
 		const vttText = await res.text();
@@ -108,15 +172,18 @@ var FunimationSync = class {
 		parser.flush();
 
 		const head = new LinkNode(cues[0]);
+		head.value.id = 0;
 		let last = head;
 		for(let i = 1; i < cues.length; i++) {
 			const node = new LinkNode(cues[i]);
+			node.value.id = i;
 			if(last) last.next = node;
 			node.prev = last;
 			last = node;
 		}
 		this.trackList = new LinkedList(head);
 		this.setKeypressEventListener();
+		this.setupTracksBox();
 	}
 
 	getCurrentCue() {
@@ -169,8 +236,8 @@ const initializeSyncCtl = _ => {
 if(/^\/v\/.+/.test(document.location.pathname)) {
 	const wait = setInterval(_ => {
 		if(document.querySelector('video#vjs_video_3_html5_api')) {
-			initializeSyncCtl();
 			clearInterval(wait);
+			initializeSyncCtl();
 		}
 	}, 100);
 	setTimeout(_ => {
