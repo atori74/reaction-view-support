@@ -35,5 +35,9 @@
 		"page": "options.html",
 		"open_in_tab": false
 	},
+	"web_accessible_resources": [
+		"static/auto-scroll.png",
+		"static/pause-scroll.png"
+	],
 	"manifest_version": 2
 }

@@ -1,8 +1,8 @@
 function dragElement(elmnt) {
   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  if (document.getElementById(elmnt.id)) {
+  if (document.getElementById(elmnt.id+'-header')) {
     // if present, the header is where you move the DIV from:
-    document.getElementById(elmnt.id).onmousedown = dragMouseDown;
+    document.getElementById(elmnt.id+'-header').onmousedown = dragMouseDown;
   } else {
     // otherwise, move the DIV from anywhere inside the DIV:
     elmnt.onmousedown = dragMouseDown;
@@ -80,7 +80,6 @@ var FunimationSync = class {
 	setupTracksBox() {
 		const boxDiv = document.createElement('div');
 		boxDiv.id = 'rvs-tracks-box';
-		boxDiv.classList.add('visible');
 		for(let cur = this.trackList.head; cur; cur = cur.next) {
 			const row = document.createElement('div');
 			row.innerText = cur.value.text;
@@ -88,9 +87,78 @@ var FunimationSync = class {
 			row.classList.add('track-row')
 			boxDiv.appendChild(row);
 		}
-		dragElement(boxDiv);
-		document.body.appendChild(boxDiv);
+
+		const outerDiv = document.createElement('div');
+		outerDiv.id = 'movable-box';
+		outerDiv.classList.add('visible');
+
+		const headerDiv = document.createElement('div');
+		headerDiv.id = outerDiv.id + '-header';
+		headerDiv.innerText = 'Text Tracks'
+		outerDiv.appendChild(headerDiv);
+
+		const relativeDiv = document.createElement('div');
+		relativeDiv.id = 'tracks-box-relative';
+		outerDiv.appendChild(relativeDiv);
+
+		outerDiv.appendChild(boxDiv);
+		document.body.appendChild(outerDiv);
+		dragElement(outerDiv);
+
+		this.pauseScrollButton();
 		this.traceTrack();
+	}
+
+	pauseScrollButton() {
+		const autoScroll = document.querySelector('div#auto-scroll');
+		if (autoScroll) autoScroll.remove();
+
+		const img = document.createElement('img');
+		img.src = chrome.runtime.getURL('static/pause-scroll.png');
+
+		const div = document.createElement('div');
+		div.id = 'pause-scroll'
+		div.classList.add('toggle-scroll');
+		div.onclick = _ => {
+			this.pauseTrackScrolling();
+		};
+		div.appendChild(img);
+
+		const trackBox = document.getElementById('tracks-box-relative');
+		trackBox.appendChild(div);
+	}
+
+	autoScrollButton() {
+		const pauseScroll = document.querySelector('div#pause-scroll');
+		if (pauseScroll) pauseScroll.remove();
+
+		const img = document.createElement('img');
+		img.src = chrome.extension.getURL('static/auto-scroll.png');
+
+		const div = document.createElement('div');
+		div.id = 'auto-scroll'
+		div.classList.add('toggle-scroll');
+		div.onclick = _ => {
+			this.autoTrackScrolling();
+		};
+		div.appendChild(img);
+
+		const trackBox = document.getElementById('tracks-box-relative');
+		trackBox.appendChild(div);
+	}
+
+	autoTrackScrolling() {
+		const box = document.getElementById('rvs-tracks-box');
+		box.classList.remove('manual-scrolled');
+
+		this.pauseScrollButton();
+	}
+
+	pauseTrackScrolling() {
+		const box = document.getElementById('rvs-tracks-box');
+		box.classList.add('manual-scrolled');
+
+		this.autoScrollButton();
 	}
 
 	async traceTrack() {
@@ -105,25 +173,25 @@ var FunimationSync = class {
 			if (row) row.classList.add('current-track-row');
 
 			const trackBox = document.getElementById('rvs-tracks-box');
-			const doScroll = true;
-			if (doScroll) {
-				const relativeTop = row.getBoundingClientRect().top - trackBox.firstChild.getBoundingClientRect().top;
-				const topMargin = 16;
-				const scrollTopTo= relativeTop + topMargin - (trackBox.clientHeight/3);
-				if (Math.abs(scrollTopTo - trackBox.scrollTop) > trackBox.clientHeight) {
-					trackBox.scrollTop = scrollTopTo;
-				} else {
-					trackBox.scroll({
-						top: scrollTopTo,
-						behavior: 'smooth',
-					})
-				}
+			const doNotScroll = trackBox.classList.contains('manual-scrolled');
+			if (doNotScroll) return;
+
+			const relativeTop = row.getBoundingClientRect().top - trackBox.firstChild.getBoundingClientRect().top;
+			const topMargin = 16;
+			const scrollTopTo= relativeTop + topMargin - (trackBox.clientHeight/3);
+			if (Math.abs(scrollTopTo - trackBox.scrollTop) > trackBox.clientHeight) {
+				trackBox.scrollTop = scrollTopTo;
+			} else {
+				trackBox.scroll({
+					top: scrollTopTo,
+					behavior: 'smooth',
+				})
 			}
 		}, 100);
 	}
 
 	toggleTracksBox() {
-		document.getElementById('rvs-tracks-box').classList.toggle('visible');
+		document.querySelector('#movable-box').classList.toggle('visible');
 	}
 
 	getDuration() {
