@@ -108,7 +108,20 @@ chrome.runtime.onInstalled.addListener(function() {
 	// extension読込時はstorageをクリア
 	clearStorage('session');
 
-	chrome.runtime.onMessage.addListener(async msg => {
+	/*
+	chrome.webRequest.onBeforeRequest.addListener(
+		detail => {
+			console.log("Redirect: " + detail.url)
+			return {
+				redirectUrl: "https://us-central1-streamsync-307115.cloudfunctions.net/GeoCheck"
+			}
+		},
+		{urls: ["https://geo-service.prd.funimationsvc.com/geo/v1/region/check"]},
+		["blocking"]
+	)
+	*/
+
+	chrome.runtime.onMessage.addListener(async (msg, sender) => {
 		if(msg.type == 'FROM_PAGE') {
 			if(msg.command == 'responsePosition') {
 				const masterPosition = msg.data.position;

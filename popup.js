@@ -39,6 +39,10 @@ const renderPopup = async _ => {
 	document.getElementById('sync').onclick = elem => {
 		sync();
 	}
+
+	document.getElementById('toggle-tracks-Box').onclick = elem => {
+		toggleTracksBox();
+	}
 }
 
 
@@ -129,6 +133,13 @@ const sync = _ => {
 		},
 	})
 
+}
+
+const toggleTracksBox = _ => {
+	chrome.runtime.sendMessage({
+		'type': 'FROM_ACTION',
+		'command': 'toggleTracksBox',
+	})
 }
 
 const getAllTabs = async _ => new Promise(resolve => {
