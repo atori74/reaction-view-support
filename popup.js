@@ -40,7 +40,7 @@ const renderPopup = async _ => {
 		sync();
 	}
 
-	document.getElementById('toggle-tracks-Box').onclick = elem => {
+	document.getElementById('toggle-tracks-box').onclick = elem => {
 		toggleTracksBox();
 	}
 }
