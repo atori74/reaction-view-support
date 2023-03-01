@@ -12,6 +12,7 @@
 		"*://*.netflix.com/*",
 		"*://*.funimation.com/*",
 		"*://*.amazon.co.jp/*",
+		"*://*.twitch.tv/*",
 		"https://*.prd.funimationsvc.com/*"
 	],
 	"background": {
@@ -38,6 +39,10 @@
 		{
 			"matches": ["*://*.amazon.co.jp/*"],
 			"js": ["utils.js", "primevideo.js"]
+		},
+		{
+			"matches": ["*://*.twitch.tv/*"],
+			"js": ["utils.js", "twitch.js"]
 		}
 	],
 	"options_ui": {
