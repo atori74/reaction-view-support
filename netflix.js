@@ -83,10 +83,7 @@ const NetflixCtl = class {
 	}
 
 	sync(position) {
-		const delta = this.video.currentTime - position;
-		if(delta > this.allowedDiff || delta < -1 * this.allowedDiff) {
-			this.seekTo(position);
-		};
+		this.seekTo(position);
 	}
 
 	sendPlaybackPosition() {
@@ -113,13 +110,13 @@ const NetflixCtl = class {
 		this.clearEventListener();
 		this.state = 'CLOSED';
 	}
-
-	async sleep(ms) {
-		return new Promise(resolve => {
-			setTimeout(resolve, ms);
-		})
-	}
 }
+
+const sleep = async ms => {
+	return new Promise(resolve => {
+		setTimeout(resolve, ms);
+	})
+};
 
 let syncCtl;
 
@@ -155,7 +152,7 @@ const stopSyncCtl = _ => {
 })();
 
 let currentHref = document.location.href;
-const watchNavigate = setInterval(_ => {
+const watchNavigate = setInterval(async _ => {
 	if (currentHref != document.location.href) {
 		currentHref = document.location.href;
 		if(document.location.hostname != 'www.netflix.com') {
@@ -163,6 +160,7 @@ const watchNavigate = setInterval(_ => {
 			return
 		}
 		stopSyncCtl();
+		await sleep(1000)
 		initializeSyncCtl();
 	}
 }, 100);
