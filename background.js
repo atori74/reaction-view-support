@@ -163,6 +163,19 @@ chrome.runtime.onInstalled.addListener(function() {
 					{code: `syncCtl.sendPlaybackPosition();`},
 				)
 			}
+			if (msg.command == 'toggleTracksBox') {
+				const tab = chrome.tabs.query({
+					active: true,
+					url: '*://*.funimation.com/*',
+				}, tabs => {
+					for(const tab of tabs) {
+						chrome.tabs.executeScript(
+							tab.id,
+							{code: `syncCtl.toggleTracksBox();`},
+						)
+					}
+				})
+			}
 		}
 	})
 });
