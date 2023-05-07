@@ -108,11 +108,40 @@ chrome.runtime.onInstalled.addListener(function() {
 	// extension読込時はstorageをクリア
 	clearStorage('session');
 
-	chrome.runtime.onMessage.addListener(async msg => {
+	/*
+	chrome.webRequest.onBeforeRequest.addListener(
+		detail => {
+			console.log("Redirect: " + detail.url)
+			return {
+				redirectUrl: "https://us-central1-streamsync-307115.cloudfunctions.net/GeoCheck"
+			}
+		},
+		{urls: ["https://geo-service.prd.funimationsvc.com/geo/v1/region/check"]},
+		["blocking"]
+	)
+	*/
+
+	chrome.runtime.onMessage.addListener(async (msg, sender) => {
 		if(msg.type == 'FROM_PAGE') {
 			if(msg.command == 'responsePosition') {
 				const masterPosition = msg.data.position;
 				// seekSlave(masterPosition);
+				return;
+			}
+			if(msg.command == 'getVttLocation') {
+				const callback = detail => {
+					chrome.webRequest.onCompleted.removeListener(callback);
+					if(detail.tabId == sender.tab.id) {
+						chrome.tabs.executeScript(
+							sender.tab.id,
+							{code: `syncCtl.setupVtt('${detail.url}');`}
+						)
+					}
+				}
+				const filter = {
+					urls: ['https://*/*.vtt']
+				}
+				chrome.webRequest.onCompleted.addListener(callback, filter);
 				return;
 			}
 		}
@@ -133,6 +162,19 @@ chrome.runtime.onInstalled.addListener(function() {
 					tabId,
 					{code: `syncCtl.sendPlaybackPosition();`},
 				)
+			}
+			if (msg.command == 'toggleTracksBox') {
+				const tab = chrome.tabs.query({
+					active: true,
+					url: '*://*.funimation.com/*',
+				}, tabs => {
+					for(const tab of tabs) {
+						chrome.tabs.executeScript(
+							tab.id,
+							{code: `syncCtl.toggleTracksBox();`},
+						)
+					}
+				})
 			}
 		}
 	})

@@ -39,6 +39,10 @@ const renderPopup = async _ => {
 	document.getElementById('sync').onclick = elem => {
 		sync();
 	}
+
+	document.getElementById('toggle-tracks-box').onclick = elem => {
+		toggleTracksBox();
+	}
 }
 
 
@@ -93,7 +97,7 @@ const sync = _ => {
 	const slaveSelectedOption = document.getElementById('slave-tab-select');
 	const slaveTabId = Number(slaveSelectedOption.options[slaveSelectedOption.selectedIndex].value);
 
-	if (!(masterAnchorPoint && masterTabId && slaveAnchorPoint && slaveTabId)) {
+	if (masterAnchorPoint == null || masterTabId == null || slaveAnchorPoint == null || slaveTabId == null ) {
 		console.log('Some inputs might be lack')
 		return;
 	}
@@ -129,6 +133,13 @@ const sync = _ => {
 		},
 	})
 
+}
+
+const toggleTracksBox = _ => {
+	chrome.runtime.sendMessage({
+		'type': 'FROM_ACTION',
+		'command': 'toggleTracksBox',
+	})
 }
 
 const getAllTabs = async _ => new Promise(resolve => {

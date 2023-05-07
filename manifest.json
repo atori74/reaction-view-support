@@ -5,10 +5,15 @@
 	"permissions": [
 		"storage",
 		"tabs",
+		"webRequest",
+		"webRequestBlocking",
 		"*://*.youtube.com/*",
 		"*://*.amazon.co.jp/*",
 		"*://*.netflix.com/*",
-		"*://*.funimation.com/*"
+		"*://*.funimation.com/*",
+		"*://*.amazon.co.jp/*",
+		"*://*.twitch.tv/*",
+		"https://*.prd.funimationsvc.com/*"
 	],
 	"background": {
 		"page": "background.html",
@@ -20,16 +25,33 @@
 	"content_scripts": [
 		{
 			"matches": ["*://*.youtube.com/*"],
-			"js": ["youtube.js"]
+			"js": ["utils.js", "youtube.js"]
 		},
 		{
 			"matches": ["*://*.funimation.com/*"],
-			"js": ["funimation.js"]
+			"js": ["packages/vtt.min.js", "utils.js", "funimation.js"],
+			"css": ["funimation.css"]
+		},
+		{
+			"matches": ["*://*.netflix.com/*"],
+			"js": ["utils.js", "netflix.js"]
+		},
+		{
+			"matches": ["*://*.amazon.co.jp/*"],
+			"js": ["utils.js", "primevideo.js"]
+		},
+		{
+			"matches": ["*://*.twitch.tv/*"],
+			"js": ["utils.js", "twitch.js"]
 		}
 	],
 	"options_ui": {
 		"page": "options.html",
 		"open_in_tab": false
 	},
+	"web_accessible_resources": [
+		"static/auto-scroll.png",
+		"static/pause-scroll.png"
+	],
 	"manifest_version": 2
 }
