@@ -63,24 +63,24 @@ const appendUserLog = async logs => {
 */
 
 const AnchorPoint = class {
-	constructor(masterTabId, masterPosition, slaveTabId, slavePosition) {
+	constructor(masterTabId, masterPosition, followerTabId, followerPosition) {
 		this.master = {
 			tabId: masterTabId,
 			position: masterPosition,
 		}
-		this.slave = {
-			tabId: slaveTabId,
-			position: slavePosition,
+		this.follower = {
+			tabId: followerTabId,
+			position: followerPosition,
 		}
 	}
 }
 
 const seekSlave = async (masterPosition, anchorPoint) => {
-	const slavePosition = anchorPoint.slave.position + masterPosition - anchorPoint.master.position;
-	const slaveTabId = anchorPoint.slave.tabId;
+	const followerPosition = anchorPoint.follower.position + masterPosition - anchorPoint.master.position;
+	const followerTabId = anchorPoint.follower.tabId;
 	chrome.tabs.executeScript(
-		slaveTabId,
-		{code: `syncCtl.sync(${slavePosition})`}
+		followerTabId,
+		{code: `syncCtl.sync(${followerPosition})`}
 	);
 }
 
@@ -150,8 +150,8 @@ chrome.runtime.onInstalled.addListener(function() {
 				const a = new AnchorPoint(
 					msg.data.masterTabId,
 					msg.data.masterAnchorPoint,
-					msg.data.slaveTabId,
-					msg.data.slaveAnchorPoint
+					msg.data.followerTabId,
+					msg.data.followerAnchorPoint
 				);
 				sync(a);
 				return;

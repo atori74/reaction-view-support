@@ -1,0 +1,26 @@
+html {}
+
+body {}
+
+.capture-section {
+	margin: 5px auto;
+}
+
+.capture-section * {
+	margin: 1px auto;
+}
+
+.capture-section input {
+	margin: 0 4px 0 0;
+}
+
+.capture-button {}
+
+.anchor-point-sec {}
+
+.tab-select {}
+
+.sync-button {
+	margin: 5px auto;
+}
+
