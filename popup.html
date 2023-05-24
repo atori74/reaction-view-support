@@ -5,26 +5,33 @@
 		<link href="./popup.css" rel="stylesheet">
 	</head>
 	<body>
-		<div>
-			<select name="master-tab" class="tab-select" id="master-tab-select">
-				<option value="">Master tab</option>
-			</select>
+
+		<div class="capture-section">
+			<div>Master</div>
+			<div>
+				<select name="master-tab" class="tab-select" id="master-tab-select">
+					<option value="">Select the Master Tab</option>
+				</select>
+			</div>
+			<div class="anchor-point-sec" id="master-anchor-point">
+				<input id="master-anchor-point-input"></input><span><button name="master-capture" class="capture-button">capture</button></span>
+			</div>
 		</div>
-		<div>
-			<select name="slave-tab" class="tab-select" id="slave-tab-select">
-				<option value="">Slave tab</option>
-			</select>
+
+		<div class="capture-section">
+			<div>Follower</div>
+			<div>
+				<select name="follower-tab" class="tab-select" id="follower-tab-select">
+					<option value="">Select the Follower Tab</option>
+				</select>
+			</div>
+			<div class="anchor-point-sec" id="follower-anchor-point">
+				<input id="follower-anchor-point-input"></input><span><button name="follower-capture" class="capture-button">capture</button></span>
+			</div>
 		</div>
-		<div class="anchor-point-sec" id="master-anchor-point">
-			<div>Master Point</div>
-			<input id="master-anchor-point-input"></input><span><button name="master-capture" class="capture-position">Capture</button></span>
-		</div>
-		<div class="anchor-point-sec" id="slave-anchor-point">
-			<div>Slave Point</div>
-			<input id="slave-anchor-point-input"></input><span><button name="slave-capture" class="capture-position">Capture</button></span>
-		</div>
-		<div class="sync-button"><a id="sync" href="#">Sync</a></div>
-		<div class="sync-button"><a id="toggle-tracks-box" href="#">Tracks</a></div>
+
+		<button class="sync-button" id="sync">Sync</button>
+		<button class="sync-button" id="toggle-tracks-box">Tracks</button>
 
 		<script src="packages/umd.js" type="text/javascript"></script>
 		<script src="utils.js" type="text/javascript"></script>

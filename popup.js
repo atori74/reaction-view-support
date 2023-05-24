@@ -14,10 +14,10 @@ const renderPopup = async _ => {
 			const option = document.createElement('option');
 			option.value = tab.id;
 			option.innerText = tab.title;
-			if(lastSetData  && selection.name == 'master-tab' && lastSetData.masterTabId == tab.id) {
+			if(lastSetData && selection.name == 'master-tab' && lastSetData.masterTabId == tab.id) {
 				option.selected = true;
 			}
-			if(lastSetData  && selection.name == 'slave-tab' && lastSetData.slaveTabId == tab.id) {
+			if(lastSetData && selection.name == 'follower-tab' && lastSetData.followerTabId == tab.id) {
 				option.selected = true;
 			}
 			selection.appendChild(option);
@@ -26,10 +26,10 @@ const renderPopup = async _ => {
 
 	if (lastSetData) {
 		document.getElementById('master-anchor-point-input').value = lastSetData.masterAnchorPoint;
-		document.getElementById('slave-anchor-point-input').value = lastSetData.slaveAnchorPoint;
+		document.getElementById('follower-anchor-point-input').value = lastSetData.followerAnchorPoint;
 	}
 
-	const captureButtons = document.getElementsByClassName('capture-position')
+	const captureButtons = document.getElementsByClassName('capture-button')
 	for (let b of captureButtons) {
 		b.onclick = _ => {
 			requestCapturePosition(b.name);
@@ -53,9 +53,9 @@ const requestCapturePosition = buttonName => {
 	if (buttonName == 'master-capture') {
 		const masterTabOption = document.getElementById('master-tab-select');
 		tabId = Number(masterTabOption.options[masterTabOption.selectedIndex].value);
-	} else if (buttonName == 'slave-capture') {
-		const slaveTabOption = document.getElementById('slave-tab-select');
-		tabId = Number(slaveTabOption.options[slaveTabOption.selectedIndex].value);
+	} else if (buttonName == 'follower-capture') {
+		const followerTabOption = document.getElementById('follower-tab-select');
+		tabId = Number(followerTabOption.options[followerTabOption.selectedIndex].value);
 	} else {
 		return;
 	}
@@ -77,9 +77,9 @@ const requestCapturePosition = buttonName => {
 		const position = msg.data.position;
 		if (buttonName == 'master-capture') {
 			document.getElementById('master-anchor-point-input').value = position;
-		} else if (buttonName == 'slave-capture') {
-			document.getElementById('slave-anchor-point-input').value = position;
-		}
+		} else if (buttonName == 'follower-capture') {
+			document.getElementById('follower-anchor-point-input').value = position;
+		} 
 	}
 	chrome.runtime.onMessage.addListener(handlePlaybackPosition);
 	setTimeout(_ => {
@@ -93,11 +93,11 @@ const sync = _ => {
 	const masterSelectedOption = document.getElementById('master-tab-select');
 	const masterTabId = Number(masterSelectedOption.options[masterSelectedOption.selectedIndex].value);
 
-	const slaveAnchorPoint = Number(document.getElementById('slave-anchor-point-input').value);
-	const slaveSelectedOption = document.getElementById('slave-tab-select');
-	const slaveTabId = Number(slaveSelectedOption.options[slaveSelectedOption.selectedIndex].value);
+	const followerAnchorPoint = Number(document.getElementById('follower-anchor-point-input').value);
+	const followerSelectedOption = document.getElementById('follower-tab-select');
+	const followerTabId = Number(followerSelectedOption.options[followerSelectedOption.selectedIndex].value);
 
-	if (masterAnchorPoint == null || masterTabId == null || slaveAnchorPoint == null || slaveTabId == null ) {
+	if (masterAnchorPoint == null || masterTabId == null || followerAnchorPoint == null || followerTabId == null ) {
 		console.log('Some inputs might be lack')
 		return;
 	}
@@ -106,8 +106,8 @@ const sync = _ => {
 		'lastSetData': {
 			'masterTabId': masterTabId,
 			'masterAnchorPoint': masterAnchorPoint,
-			'slaveTabId': slaveTabId,
-			'slaveAnchorPoint': slaveAnchorPoint,
+			'followerTabId': followerTabId,
+			'followerAnchorPoint': followerAnchorPoint,
 		}
 	})
 
@@ -117,8 +117,8 @@ const sync = _ => {
 		'data': {
 			'masterTabId': masterTabId,
 			'masterAnchorPoint': masterAnchorPoint,
-			'slaveTabId': slaveTabId,
-			'slaveAnchorPoint': slaveAnchorPoint,
+			'followerTabId': followerTabId,
+			'followerAnchorPoint': followerAnchorPoint,
 		},
 	})
 
@@ -128,8 +128,8 @@ const sync = _ => {
 		'data': {
 			'masterTabId': masterTabId,
 			'masterAnchorPoint': masterAnchorPoint,
-			'slaveTabId': slaveTabId,
-			'slaveAnchorPoint': slaveAnchorPoint,
+			'followerTabId': followerTabId,
+			'followerAnchorPoint': followerAnchorPoint,
 		},
 	})
 

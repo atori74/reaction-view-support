@@ -26,7 +26,7 @@ var FunimationSync = class {
 
 		const outerDiv = document.createElement('div');
 		outerDiv.id = 'movable-box';
-		outerDiv.classList.add('visible');
+		// outerDiv.classList.add('visible');
 
 		const headerDiv = document.createElement('div');
 		headerDiv.id = outerDiv.id + '-header';
