@@ -69,7 +69,7 @@ var FunimationSync = class {
 		if (pauseScroll) pauseScroll.remove();
 
 		const img = document.createElement('img');
-		img.src = chrome.extension.getURL('static/auto-scroll.png');
+		img.src = chrome.runtime.getURL('static/auto-scroll.png');
 
 		const div = document.createElement('div');
 		div.id = 'auto-scroll'

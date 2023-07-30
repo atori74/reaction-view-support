@@ -3,10 +3,12 @@
 	"version": "1.0",
 	"description": "Rection View Support",
 	"permissions": [
+		"scripting",
 		"storage",
 		"tabs",
-		"webRequest",
-		"webRequestBlocking",
+		"webRequest"
+	],
+	"host_permissions": [
 		"*://*.youtube.com/*",
 		"*://*.amazon.co.jp/*",
 		"*://*.netflix.com/*",
@@ -16,10 +18,9 @@
 		"https://*.prd.funimationsvc.com/*"
 	],
 	"background": {
-		"page": "background.html",
-		"persistent": true
+		"service_worker": "background.js"
 	},
-	"browser_action": {
+	"action": {
 		"default_popup": "popup.html"
 	},
 	"content_scripts": [
@@ -50,8 +51,15 @@
 		"open_in_tab": false
 	},
 	"web_accessible_resources": [
-		"static/auto-scroll.png",
-		"static/pause-scroll.png"
+		{
+			"resources": [
+				"static/auto-scroll.png",
+				"static/pause-scroll.png"
+			],
+			"matches": [
+				"*://*.funimation.com/*"
+			]
+		}
 	],
-	"manifest_version": 2
+	"manifest_version": 3
 }
