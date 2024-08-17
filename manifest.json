@@ -15,7 +15,8 @@
 		"*://*.funimation.com/*",
 		"*://*.amazon.co.jp/*",
 		"*://*.twitch.tv/*",
-		"https://*.prd.funimationsvc.com/*"
+		"https://*.prd.funimationsvc.com/*",
+		"*://animestore.docomo.ne.jp/*"
 	],
 	"background": {
 		"service_worker": "background.js"
@@ -44,6 +45,10 @@
 		{
 			"matches": ["*://*.twitch.tv/*"],
 			"js": ["utils.js", "twitch.js"]
+		},
+		{
+			"matches": ["*://animestore.docomo.ne.jp/*"],
+			"js": ["utils.js", "danimestore.js"]
 		}
 	],
 	"options_ui": {

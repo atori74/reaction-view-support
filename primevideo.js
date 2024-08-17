@@ -3,11 +3,7 @@ const PrimeVideoCtl = class {
 	}
 
 	getVideo() {
-		const videos = document.querySelectorAll('.webPlayerContainer video[src]');
-		if(videos.length == 0) {
-			return undefined;
-		}
-		return videos[videos.length - 1];
+		return document.querySelector('#dv-web-player video');
 	}
 
 	getDuration() {
@@ -107,7 +103,7 @@ const initializeSyncCtl = _ => {
 
 if(isPrimeVideo()) {
 	const wait = setInterval(_ => {
-		if(document.querySelector('.webPlayerElement video')) {
+		if(document.querySelector('#dv-web-player video')) {
 			initializeSyncCtl();
 			clearInterval(wait);
 		}

@@ -15,6 +15,9 @@
 
 - Youtube
 - Funimation
+- Amazon Prime Video
+- Netflix
+- dアニメストア
 
 ## お試し
 
