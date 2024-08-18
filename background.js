@@ -1,3 +1,6 @@
+importScripts('packages/umd.js')
+importScripts('utils.js')
+
 let sMutex = new Mutex();
 
 const sleep = ms => new Promise(resolve => {
@@ -78,18 +81,19 @@ const AnchorPoint = class {
 const seekSlave = async (masterPosition, anchorPoint) => {
 	const followerPosition = anchorPoint.follower.position + masterPosition - anchorPoint.master.position;
 	const followerTabId = anchorPoint.follower.tabId;
-	chrome.tabs.executeScript(
-		followerTabId,
-		{code: `syncCtl.sync(${followerPosition})`}
-	);
+	chrome.scripting.executeScript({
+		target: {tabId: followerTabId},
+		func: position => { syncCtl.sync(position); },
+		args: [followerPosition],
+	});
 }
 
 const sync = async anchorPoint => {
 	const masterTabId = anchorPoint.master.tabId;
-	chrome.tabs.executeScript(
-		masterTabId,
-		{code: 'syncCtl.responsePosition();'}
-	);
+	chrome.scripting.executeScript({
+		target: {tabId: masterTabId},
+		func: _ => { syncCtl.responsePosition(); },
+	});
 	const receiveResponseFromMaster = msg => {
 		chrome.runtime.onMessage.removeListener(receiveResponseFromMaster);
 		if(msg.type == 'FROM_PAGE') {
@@ -120,63 +124,64 @@ chrome.runtime.onInstalled.addListener(function() {
 		["blocking"]
 	)
 	*/
-
-	chrome.runtime.onMessage.addListener(async (msg, sender) => {
-		if(msg.type == 'FROM_PAGE') {
-			if(msg.command == 'responsePosition') {
-				const masterPosition = msg.data.position;
-				// seekSlave(masterPosition);
-				return;
-			}
-			if(msg.command == 'getVttLocation') {
-				const callback = detail => {
-					chrome.webRequest.onCompleted.removeListener(callback);
-					if(detail.tabId == sender.tab.id) {
-						chrome.tabs.executeScript(
-							sender.tab.id,
-							{code: `syncCtl.setupVtt('${detail.url}');`}
-						)
-					}
-				}
-				const filter = {
-					urls: ['https://*/*.vtt']
-				}
-				chrome.webRequest.onCompleted.addListener(callback, filter);
-				return;
-			}
-		}
-		if(msg.type == 'FROM_ACTION') {
-			if(msg.command == 'sync') {
-				const a = new AnchorPoint(
-					msg.data.masterTabId,
-					msg.data.masterAnchorPoint,
-					msg.data.followerTabId,
-					msg.data.followerAnchorPoint
-				);
-				sync(a);
-				return;
-			}
-			if (msg.command == 'captureRequest') {
-				const tabId = msg.data.tabId;
-				chrome.tabs.executeScript(
-					tabId,
-					{code: `syncCtl.sendPlaybackPosition();`},
-				)
-			}
-			if (msg.command == 'toggleTracksBox') {
-				const tab = chrome.tabs.query({
-					active: true,
-					url: '*://*.funimation.com/*',
-				}, tabs => {
-					for(const tab of tabs) {
-						chrome.tabs.executeScript(
-							tab.id,
-							{code: `syncCtl.toggleTracksBox();`},
-						)
-					}
-				})
-			}
-		}
-	})
 });
+
+chrome.runtime.onMessage.addListener(async (msg, sender) => {
+	if(msg.type == 'FROM_PAGE') {
+		if(msg.command == 'responsePosition') {
+			const masterPosition = msg.data.position;
+			// seekSlave(masterPosition);
+			return;
+		}
+		if(msg.command == 'getVttLocation') {
+			const callback = detail => {
+				chrome.webRequest.onCompleted.removeListener(callback);
+				if(detail.tabId == sender.tab.id) {
+					chrome.scripting.executeScript({
+						target: {tabId: sender.tab.id},
+						func: url => { syncCtl.setupVtt(url); },
+						args: [detail.url],
+					})
+				}
+			}
+			const filter = {
+				urls: ['https://*/*.vtt']
+			}
+			chrome.webRequest.onCompleted.addListener(callback, filter);
+			return;
+		}
+	}
+	if(msg.type == 'FROM_ACTION') {
+		if(msg.command == 'sync') {
+			const a = new AnchorPoint(
+				msg.data.masterTabId,
+				msg.data.masterAnchorPoint,
+				msg.data.followerTabId,
+				msg.data.followerAnchorPoint
+			);
+			sync(a);
+			return;
+		}
+		if (msg.command == 'captureRequest') {
+			const tabId = msg.data.tabId;
+			chrome.scripting.executeScript({
+				target: {tabId: tabId},
+				func: _ => { syncCtl.sendPlaybackPosition(); },
+			})
+		}
+		if (msg.command == 'toggleTracksBox') {
+			const tab = chrome.tabs.query({
+				active: true,
+				url: '*://*.funimation.com/*',
+			}, tabs => {
+				for(const tab of tabs) {
+					chrome.scripting.executeScript({
+						target: {tabId: tab.id},
+						func: _ => { syncCtl.toggleTracksBox(); },
+					})
+				}
+			})
+		}
+	}
+})
 
